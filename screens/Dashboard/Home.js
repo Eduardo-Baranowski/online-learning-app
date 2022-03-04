@@ -1,8 +1,8 @@
 import React from 'react';
 import {View, Text, ImageBackground, Image, ScrollView} from 'react-native';
-import {FlatList} from 'gesture-native-gesture-handler';
+import {FlatList} from 'react-native-gesture-handler';
 
-import {IconButton, TextButton} from '../../components';
+import {IconButton, TextButton, VerticalCourseCard} from '../../components';
 import {COLORS, SIZES, FONTS, icons, images, dummyData} from '../../constants';
 
 const Home = () => {
@@ -96,6 +96,36 @@ const Home = () => {
       </ImageBackground>
     );
   }
+
+  function renderCourses() {
+    return (
+      <FlatList
+        horizontal
+        data={dummyData.courses_list_1}
+        listKey="Courses"
+        keyExtractor={item => `Courses-${item.id}`}
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{
+          marginTop: SIZES.padding,
+        }}
+        renderItem={({item, index}) => {
+          return (
+            <VerticalCourseCard
+              containerStyle={{
+                marginLeft: index === 0 ? SIZES.padding : SIZES.radius,
+                marginRight:
+                  index === dummyData.courses_list_1.length - 1
+                    ? SIZES.padding
+                    : 0,
+              }}
+              course={item}
+            />
+          );
+        }}
+      />
+    );
+  }
+
   return (
     <View
       style={{
@@ -109,6 +139,8 @@ const Home = () => {
         }}
         showsVerticalScrollIndicator={false}>
         {renderStartLearning()}
+
+        {renderCourses()}
       </ScrollView>
     </View>
   );
