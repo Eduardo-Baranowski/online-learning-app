@@ -17,7 +17,17 @@ const CategoryCard = ({category, containerStyle}) => {
           justifyContent: 'flex-end',
           ...containerStyle,
         }}
-      />
+        imageStyle={{
+          borderRadius: SIZES.radius,
+        }}>
+        <Text
+          style={{
+            color: COLORS.white,
+            ...FONTS.h2,
+          }}>
+          {category?.title}
+        </Text>
+      </ImageBackground>
     </TouchableOpacity>
   );
 };
