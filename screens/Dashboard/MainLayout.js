@@ -1,5 +1,6 @@
 import React, {useCallback, useEffect} from 'react';
 import {View, Text, TouchableOpacity, Image, Animated} from 'react-native';
+import {connect} from 'react-redux';
 
 import {Home, Profile, Search} from '../../screens';
 import {COLORS, SIZES, FONTS, constants} from '../../constants';
@@ -114,7 +115,7 @@ const Tabs = ({scrollX, onBottomTabPress}) => {
   );
 };
 
-const MainLayout = () => {
+const MainLayout = ({appTheme}) => {
   const flatListRef = React.useRef();
   const scrollX = React.useRef(new Animated.Value(0)).current;
 
@@ -169,16 +170,17 @@ const MainLayout = () => {
     return (
       <View
         style={{
-          marginBottom: 20,
+          paddingBottom: SIZES.height > 800 ? 20 : 5,
           paddingHorizontal: SIZES.padding,
           paddingVertical: SIZES.radius,
+          backgroundColor: appTheme?.backgroundColor1,
         }}>
         <Shadow size={[SIZES.width - SIZES.padding * 2, 85]}>
           <View
             style={{
               flex: 1,
               borderRadius: SIZES.radius,
-              backgroundColor: COLORS.primary3,
+              backgroundColor: appTheme?.backgroundColor2,
             }}>
             <Tabs scrollX={scrollX} onBottomTabPress={onBottomTabPress} />
           </View>
@@ -199,4 +201,14 @@ const MainLayout = () => {
   );
 };
 
-export default MainLayout;
+function mapStateToProps(state) {
+  return {
+    appTheme: state.appTheme,
+  };
+}
+
+function mapDispatchToProps(dispatch) {
+  return {};
+}
+
+export default connect(mapStateToProps, mapDispatchToProps)(MainLayout);

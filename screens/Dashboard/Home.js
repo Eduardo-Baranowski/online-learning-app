@@ -1,6 +1,7 @@
 import React from 'react';
 import {View, Text, ImageBackground, Image, ScrollView} from 'react-native';
 import {FlatList} from 'react-native-gesture-handler';
+import {useNavigation} from '@react-navigation/native';
 
 import {
   IconButton,
@@ -47,6 +48,7 @@ const Section = ({containerStyle, title, onPress, children}) => {
   );
 };
 const Home = () => {
+  const navigation = useNavigation();
   function renderHeader() {
     return (
       <View
@@ -190,6 +192,7 @@ const Home = () => {
                       ? SIZES.padding
                       : 0,
                 }}
+                onPress={() => navigation.navigate('CourseListing')}
               />
             );
           }}
