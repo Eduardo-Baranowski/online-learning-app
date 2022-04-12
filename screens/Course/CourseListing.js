@@ -14,19 +14,39 @@ import Animate, {
 } from 'react-native-reanimated';
 import {SharedElement} from 'react-navigation-shared-element';
 
-import {IconButton, HorizontalCourseCard, LineDivider} from '../../components';
+import {
+  IconButton,
+  HorizontalCourseCard,
+  LineDivider,
+  FilterModal,
+} from '../../components';
+
+const AnimatedFlatList = Animated.createAnimatedComponent(FlatList);
+
+const HEADER_HEIGHT = 250;
 
 import {COLORS, FONTS, SIZES, images, icons, dummyData} from '../../constants';
 
 const CourseListing = ({navigation, route}) => {
   const {category, sharedElementPrefix} = route.params;
+
+  const flatListRef = React.useRef();
+  const scrollY = useSharedValue(0);
+  const onScroll = useAnimatedScrollHandler(event => {
+    scrollY.value = event.contentOffset.y;
+  });
+
   const headerSharedValue = useSharedValue(80);
+  const filterModalSharedValue1 = useSharedValue(SIZES.height);
+  const filterModalSharedValue2 = useSharedValue(SIZES.height);
 
   function backHandler() {
     navigation.goBack();
   }
 
   function renderHeader() {
+    const inputRange = [0, HEADER_HEIGHT - 50];
+
     headerSharedValue.value = withDelay(
       500,
       withTiming(0, {
@@ -50,16 +70,61 @@ const CourseListing = ({navigation, route}) => {
       };
     });
 
+    const headerHeightAnimatedStyle = useAnimatedStyle(() => {
+      return {
+        height: interpolate(
+          scrollY.value,
+          inputRange,
+          [HEADER_HEIGHT, 120],
+          Extrapolate.CLAMP,
+        ),
+      };
+    });
+
+    const headerHideOnScrollAnimatedStyle = useAnimatedStyle(() => {
+      return {
+        opacity: interpolate(scrollY.value, [80, 0], [0, 1], Extrapolate.CLAMP),
+        transform: [
+          {
+            translateY: interpolate(
+              scrollY.value,
+              inputRange,
+              [0, 200],
+              Extrapolate.CLAMP,
+            ),
+          },
+        ],
+      };
+    });
+
+    const headerShownOnScrollAnimatedStyle = useAnimatedStyle(() => {
+      return {
+        opacity: interpolate(scrollY.value, [80, 0], [1, 0], Extrapolate.CLAMP),
+        transform: [
+          {
+            translateY: interpolate(
+              scrollY.value,
+              inputRange,
+              [50, 130],
+              Extrapolate.CLAMP,
+            ),
+          },
+        ],
+      };
+    });
     return (
       <Animated.View
-        style={{
-          position: 'absolute',
-          top: 0,
-          left: 0,
-          right: 0,
-          height: 250,
-          overflow: 'hidden',
-        }}>
+        style={[
+          {
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 250,
+            overflow: 'hidden',
+          },
+          headerHeightAnimatedStyle,
+        ]}>
         <SharedElement
           id={`${sharedElementPrefix}-CategoryCard-Bg-${category?.id}`}
           style={[StyleSheet.absoluteFillObject]}>
@@ -73,12 +138,36 @@ const CourseListing = ({navigation, route}) => {
             }}
           />
         </SharedElement>
+
         <Animated.View
-          style={{
-            position: 'absolute',
-            bottom: 70,
-            left: 30,
-          }}>
+          style={[
+            {
+              position: 'absolute',
+              top: -80,
+              left: 0,
+              right: 0,
+            },
+            headerShownOnScrollAnimatedStyle,
+          ]}>
+          <Text
+            style={{
+              textAlign: 'center',
+              color: COLORS.white,
+              ...FONTS.h2,
+            }}>
+            {category?.title}
+          </Text>
+        </Animated.View>
+
+        <Animated.View
+          style={[
+            {
+              position: 'absolute',
+              bottom: 70,
+              left: 30,
+            },
+            headerHideOnScrollAnimatedStyle,
+          ]}>
           <SharedElement
             id={`${sharedElementPrefix}-CategoryCard-Title-${category?.id}`}
             style={[StyleSheet.absoluteFillObject]}>
@@ -110,7 +199,26 @@ const CourseListing = ({navigation, route}) => {
               backgroundColor: COLORS.white,
             }}
             onPress={() => {
-              backHandler();
+              if (scrollY.value > 0 && scrollY.value <= 200) {
+                flatListRef.current?.scrollToOffset({
+                  offset: 0,
+                  animated: true,
+                });
+
+                setTimeout(() => {
+                  headerSharedValue.value = withTiming(
+                    80,
+                    {
+                      duration: 500,
+                    },
+                    () => {
+                      runOnJS(backHandler)();
+                    },
+                  );
+                }, 100);
+              } else {
+                backHandler();
+              }
             }}
           />
         </Animated.View>
@@ -127,9 +235,86 @@ const CourseListing = ({navigation, route}) => {
             },
             headerFadeAnimatedStyle,
             headerTranslateAnimatedStyle,
+            headerHideOnScrollAnimatedStyle,
           ]}
         />
       </Animated.View>
+    );
+  }
+
+  function renderResults() {
+    return (
+      <AnimatedFlatList
+        ref={flatListRef}
+        data={dummyData.courses_list_2}
+        keyExtractor={item => `Results-${item.id}`}
+        contentContainerStyle={{
+          paddingHorizontal: SIZES.padding,
+        }}
+        showsHorizontalScrollIndicator={false}
+        scrollEventThrottle={16}
+        keyboardDismissMode="on-drag"
+        onScroll={onScroll}
+        ListHeaderComponent={
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+              marginTop: 270,
+              marginBottom: SIZES.base,
+            }}>
+            <Text
+              style={{
+                flex: 1,
+                ...FONTS.body3,
+              }}>
+              5,761 Results
+            </Text>
+            <IconButton
+              icon={icons.filter}
+              iconStyle={{
+                width: 20,
+                height: 20,
+              }}
+              containerStyle={{
+                width: 40,
+                height: 40,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderRadius: 10,
+                backgroundColor: COLORS.primary,
+              }}
+              onPress={() => {
+                filterModalSharedValue1.value = withTiming(0, {
+                  duration: 100,
+                });
+                filterModalSharedValue2.value = withDelay(
+                  100,
+                  withTiming(0, {
+                    duration: 500,
+                  }),
+                );
+              }}
+            />
+          </View>
+        }
+        renderItem={({item, index}) => (
+          <HorizontalCourseCard
+            course={item}
+            containerStyle={{
+              marginVertical: SIZES.padding,
+              marginTop: index === 0 ? SIZES.radius : SIZES.padding,
+            }}
+          />
+        )}
+        ItemSeparatorComponent={() => (
+          <LineDivider
+            lineStyle={{
+              backgroundColor: COLORS.gray20,
+            }}
+          />
+        )}
+      />
     );
   }
 
@@ -139,7 +324,12 @@ const CourseListing = ({navigation, route}) => {
         flex: 1,
         backgroundColor: COLORS.white,
       }}>
+      {renderResults()}
       {renderHeader()}
+      <FilterModal
+        filterModalSharedValue1={filterModalSharedValue1}
+        filterModalSharedValue2={filterModalSharedValue2}
+      />
     </View>
   );
 };
