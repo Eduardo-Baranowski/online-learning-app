@@ -8,7 +8,7 @@ import {Provider} from 'react-redux';
 import thunk from 'redux-thunk';
 import themeReducer from './stores/themeReducer';
 
-import {MainLayout, CourseListing} from './screens';
+import {MainLayout, CourseListing, CourseDetails} from './screens';
 
 const Stack = createSharedElementStackNavigator();
 const options = {
@@ -49,6 +49,11 @@ const App = () => {
           <Stack.Screen
             name="CourseListing"
             component={CourseListing}
+            options={() => options}
+          />
+          <Stack.Screen
+            name="CourseDetails"
+            component={CourseDetails}
             options={() => options}
           />
         </Stack.Navigator>
