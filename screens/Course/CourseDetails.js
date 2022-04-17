@@ -19,6 +19,8 @@ import {
   dummyData,
 } from '../../constants';
 
+import CourseChapters from './CourseTabs/CourseChapters';
+
 const course_details_tabs = constants.course_details_tabs.map(
   course_details_tab => ({
     ...course_details_tab,
@@ -321,7 +323,7 @@ const CourseDetails = ({navigation, route}) => {
                 style={{
                   width: SIZES.width,
                 }}>
-                {index === 0 && <Text>Chapters</Text>}
+                {index === 0 && <CourseChapters />}
                 {index === 1 && <Text>Files</Text>}
                 {index === 2 && <Text>Discussions</Text>}
               </View>
