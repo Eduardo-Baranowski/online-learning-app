@@ -142,10 +142,110 @@ const CourseChapters = () => {
                     height: 40,
                   }}
                 />
+                <View
+                  style={{
+                    flex: 1,
+                    marginLeft: SIZES.radius,
+                  }}>
+                  <Text style={{...FONTS.h3}}>{item?.title}</Text>
+                  <Text style={{...FONTS.body4, color: COLORS.gray30}}>
+                    {item?.duration}
+                  </Text>
+                </View>
+                <View
+                  style={{
+                    flexDirection: 'row',
+                  }}>
+                  <Text
+                    style={{
+                      color: COLORS.gray30,
+                      ...FONTS.body4,
+                    }}>
+                    {item?.size}
+                  </Text>
+
+                  <Image
+                    source={
+                      item?.is_downloaded ? icons.completed : icons.download
+                    }
+                    style={{
+                      marginLeft: SIZES.base,
+                      width: 25,
+                      height: 25,
+                      tintColor: item?.is_lock ? COLORS.additionalColor4 : null,
+                    }}
+                  />
+                </View>
               </View>
+
+              {item?.is_playing && (
+                <View
+                  style={{
+                    position: 'absolute',
+                    bottom: 0,
+                    left: 0,
+                    height: 5,
+                    width: item?.progress,
+                    backgroundColor: COLORS.primary3,
+                  }}
+                />
+              )}
             </View>
           );
         })}
+      </View>
+    );
+  }
+
+  function renderPopularCourses() {
+    return (
+      <View
+        style={{
+          marginTop: SIZES.padding,
+        }}>
+        <View
+          style={{
+            flexDirection: 'row',
+            paddingHorizontal: SIZES.padding,
+          }}>
+          <Text
+            style={{
+              flex: 1,
+              ...FONTS.h2,
+            }}>
+            Popular Courses
+          </Text>
+
+          <TextButton
+            contentContainerStyle={{
+              width: 80,
+              borderRadius: 30,
+              backgroundColor: COLORS.primary,
+            }}
+            label="See All"
+          />
+        </View>
+
+        <FlatList
+          data={dummyData.courses_list_2}
+          listKey="Popular Courses"
+          scrollEnabled={false}
+          keyExtractor={item => `PupularCourses-${item.id}`}
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={{
+            marginTop: SIZES.radius,
+            paddingHorizontal: SIZES.padding,
+          }}
+          renderItem={({item, index}) => (
+            <HorizontalCourseCard
+              course={item}
+              containerStyle={{
+                marginVertical: SIZES.padding,
+                marginTop: index === 0 ? SIZES.radius : SIZES.padding,
+              }}
+            />
+          )}
+        />
       </View>
     );
   }
@@ -161,6 +261,7 @@ const CourseChapters = () => {
       />
 
       {renderChapter()}
+      {renderPopularCourses()}
     </ScrollView>
   );
 };
