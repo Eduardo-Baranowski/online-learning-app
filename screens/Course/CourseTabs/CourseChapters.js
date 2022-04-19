@@ -245,6 +245,7 @@ const CourseChapters = () => {
               }}
             />
           )}
+          ItemSeparatorComponent={() => <LineDivider />}
         />
       </View>
     );

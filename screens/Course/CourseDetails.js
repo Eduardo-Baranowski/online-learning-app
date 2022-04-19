@@ -20,6 +20,8 @@ import {
 } from '../../constants';
 
 import CourseChapters from './CourseTabs/CourseChapters';
+import CourseDiscussions from './CourseTabs/CourseDiscussions';
+import CourseFiles from './CourseTabs/CourseFiles';
 
 const course_details_tabs = constants.course_details_tabs.map(
   course_details_tab => ({
@@ -324,8 +326,8 @@ const CourseDetails = ({navigation, route}) => {
                   width: SIZES.width,
                 }}>
                 {index === 0 && <CourseChapters />}
-                {index === 1 && <Text>Files</Text>}
-                {index === 2 && <Text>Discussions</Text>}
+                {index === 1 && <CourseFiles />}
+                {index === 2 && <CourseDiscussions />}
               </View>
             );
           }}

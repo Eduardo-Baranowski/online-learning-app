@@ -1,5 +1,6 @@
 import IconButton from './IconButton';
 import IconLabel from './IconLabel';
+import IconLabelButton from './IconLabelButton';
 import TextButton from './TextButton';
 import VerticalCourseCard from './VerticalCourseCard';
 import LineDivider from './LineDivider';
@@ -12,6 +13,7 @@ import ProfileValue from './ProfileValue';
 import ProfileRadioButton from './ProfileRadioButton';
 
 export {
+  IconLabelButton,
   TwoPointSlider,
   FilterModal,
   ProfileRadioButton,
