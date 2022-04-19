@@ -110,6 +110,7 @@ const Tabs = ({scrollX, onTabPress}) => {
               justifyContent: 'center',
             }}
             onPress={() => {
+              Keyboard.dismiss();
               onTabPress(index);
             }}>
             <Text
